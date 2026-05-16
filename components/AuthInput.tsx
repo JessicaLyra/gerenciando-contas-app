@@ -8,26 +8,22 @@ type AuthInputProps = {
   // Tipo do input
   type?: string;
 
-  // Valor do input
-  value?: string;
-
   // Placeholder
   placeholder?: string;
 
-  // Evento onChange
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-
   // Registro do react-hook-form
   register?: any;
+
+  // Mensagem de erro
+  error?: string;
 };
 
 export default function AuthInput({
   label,
   type = "text",
-  value,
   placeholder,
-  onChange,
   register,
+  error,
 }: AuthInputProps) {
 
   return (
@@ -35,7 +31,7 @@ export default function AuthInput({
     <div>
 
       {/* Label */}
-      <label className="block text-sm/6 font-medium text-gray-100">
+      <label className="block text-sm font-medium text-gray-100">
         {label}
       </label>
 
@@ -44,20 +40,28 @@ export default function AuthInput({
 
         <input
           type={type}
-
-          value={value}
-
           placeholder={placeholder}
 
-          onChange={onChange}
-
-          // React Hook Form
+          // Props do react-hook-form
           {...register}
 
-          className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+          className="
+            block w-full rounded-md bg-white/5
+            px-3 py-2 text-white
+            outline outline-1 outline-white/10
+            placeholder:text-gray-500
+            focus:outline-2 focus:outline-indigo-500
+          "
         />
 
       </div>
+
+      {/* Mensagem de erro */}
+      {error && (
+        <p className="mt-1 text-sm text-red-400">
+          {error}
+        </p>
+      )}
 
     </div>
   );
