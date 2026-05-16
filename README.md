@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gerenciando Contas App
 
-## Getting Started
+Aplicação web em Next.js para controle de despesas com funcionalidades de login e cadastro de usuário.
 
-First, run the development server:
+## Sobre
+
+Este projeto é um sistema simples de despesas onde o usuário pode se cadastrar, fazer login e usar uma interface para gerenciar contas.
+
+Ele utiliza:
+- Next.js (App Router)
+- React
+- TypeScript
+- Prisma com PostgreSQL
+- NextAuth (Credentials)
+- bcrypt para hashing de senha
+- React Hook Form
+
+## Funcionalidades
+
+- Cadastro de usuário com criptografia de senha
+- Login com validação de email e senha
+- Rotas de API para login e cadastro
+- Integração com banco PostgreSQL via Prisma
+
+## Pré-requisitos
+
+- Node.js instalado (versão 18 ou superior recomendada)
+- PostgreSQL disponível localmente ou via serviço hospedado
+- Git instalado (para controle de versão)
+
+## Configuração do ambiente
+
+Crie um arquivo `.env.local` na raiz do projeto com pelo menos a variável:
+
+```env
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/nome_do_banco"
+```
+
+> Se estiver usando um banco hospedado, ajuste a URL conforme as credenciais e host do serviço.
+
+## Instalação
+
+No terminal, execute:
+
+```bash
+npm install
+```
+
+Em seguida, gere o cliente Prisma (se ainda não tiver sido gerado):
+
+```bash
+npx prisma generate
+```
+
+E aplique o esquema no banco com:
+
+```bash
+npx prisma db push
+```
+
+> Se preferir, use `npx prisma migrate dev --name init` para criar uma migration.
+
+## Executando o projeto
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse o app em:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts úteis
 
-## Learn More
+- `npm run dev` — inicia o servidor de desenvolvimento
+- `npm run build` — cria a versão de produção
+- `npm run start` — inicia a aplicação em modo de produção
+- `npm run lint` — executa o ESLint
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura principal
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/` — páginas e rotas do Next.js
+- `components/` — componentes reutilizáveis
+- `app/api/login/route.ts` — rota de login
+- `app/api/cadastro/route.ts` — rota de cadastro
+- `app/api/auth/[...nextauth]/route.ts` — configuração de autenticação
+- `lib/prisma.ts` — conexão com o banco
+- `prisma/schema.prisma` — modelo de dados do Prisma
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Observações
 
-## Deploy on Vercel
+- O projeto já possui a lógica de cadastro e login.
+- O esquema do Prisma define a tabela `User` com campos `usuario`, `email`, `senha` e `createdAt`.
+- A autenticação por `next-auth` está configurada com `CredentialsProvider`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
