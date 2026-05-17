@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 import bcrypt from "bcrypt";
+import { cookies } from "next/headers";
+import { createToken } from "../../../lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -43,10 +45,26 @@ export async function POST(req: Request) {
       );
     }
 
-    // Login OK
-    return NextResponse.json({
-      message: "Login realizado com sucesso",
-    });
+          // Login OK
+          // Cria token do usuário
+      const token = await createToken({
+        id: usuario.id,
+        email: usuario.email,
+      });
+
+      // Cria cookie de autenticação
+      const cookieStore = await cookies();
+
+      cookieStore.set("token", token, {
+        httpOnly: true,
+        secure: false, // true em produção
+        path: "/",
+      });
+
+      // Login OK
+      return NextResponse.json({
+        message: "Login realizado com sucesso",
+      });
 
   } catch (error) {
     console.error("ERRO LOGIN:", error);
