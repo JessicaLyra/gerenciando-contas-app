@@ -46,12 +46,16 @@ export async function POST(request: Request) {
       message: "Cadastro realizado com sucesso",
     });
 
-  } catch (error) {
-    console.error("🔥 ERRO CADASTRO:", error);
+  } catch (error: any) {
+  console.error("🔥 ERRO COMPLETO CADASTRO:");
+  console.error(error);
+  console.error("STACK:", error?.stack);
 
-    return NextResponse.json(
-      { message: "Erro interno no servidor" },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    {
+      message: "Erro interno no servidor",
+      error: error?.message,
+    },
+    { status: 500 }
+  );
 }
