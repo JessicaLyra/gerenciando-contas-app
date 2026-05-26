@@ -1,7 +1,3 @@
-import { NextResponse } from "next/server";
-
 export async function POST() {
-  return NextResponse.json({
-    env: process.env.DATABASE_URL ? "EXISTE" : "NULO",
-  });
+  return Response.json({ ok: true });
 }
