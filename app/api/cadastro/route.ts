@@ -47,15 +47,16 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-  console.error("🔥 ERRO COMPLETO CADASTRO:");
-  console.error(error);
-  console.error("STACK:", error?.stack);
+    console.error("🔥 ERRO COMPLETO CADASTRO:");
+    console.error(error);
+    console.error("STACK:", error?.stack);
 
-  return NextResponse.json(
-    {
-      message: "Erro interno no servidor",
-      error: error?.message,
-    },
-    { status: 500 }
-  );
+    return NextResponse.json(
+      {
+        message: "Erro interno no servidor",
+        error: error?.message,
+      },
+      { status: 500 }
+    );
+  }
 }
