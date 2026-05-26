@@ -21,3 +21,33 @@ model User {
   senha     String
   createdAt DateTime @default(now())
 }
+
+// Tabela de despesas
+model Despesa {
+  id Int @id @default(autoincrement())
+
+  nome String
+
+  valor Decimal @db.Decimal(10, 2)
+
+  data DateTime
+
+  descricao String
+
+  createdAt DateTime @default(now())
+
+  categoriaId Int
+
+  categoria Categoria @relation(fields: [categoriaId], references: [id])
+}
+
+// Tabela de categorias
+model Categoria {
+  id Int @id @default(autoincrement())
+
+  nome String @unique
+
+  createdAt DateTime @default(now())
+
+  despesas Despesa[]
+}

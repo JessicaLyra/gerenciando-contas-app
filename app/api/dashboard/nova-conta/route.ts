@@ -1,15 +1,15 @@
 // Importa o NextResponse do Next.js
 // Ele serve para devolver respostas da API
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+
 
 // Importa nossa conexão com o banco
 // criada no arquivo lib/prisma.ts
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../../../lib/prisma";
 
 
 // Função POST porque estamos enviando dados novos
-// (cadastro de usuário)
+// (cadastro de despesas)
 export async function POST(request: Request) {
 
   // Recebe os dados enviados pelo formulário
@@ -17,42 +17,30 @@ export async function POST(request: Request) {
 
   // Pegamos apenas os campos que precisamos
   const {
-    usuario,
-    email,
-    senha,
+    nome,
+    valor,
+    categoriaId,
+    data,
+    descricao,
+    
   } = body;
 
   try {
 
-    // Primeiro verificamos se já existe alguém
-    // com esse mesmo email no banco
-    const usuarioExistente = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    
 
-    // Se já existir, retornamos erro
-    if (usuarioExistente) {
-      return NextResponse.json(
-        {
-          message: "Este e-mail já está cadastrado",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    // Criptografa a senha antes de salvar
-    const senhaCriptografada = await bcrypt.hash(senha, 10);
-
-    // Se não existir, criamos o usuário
-    await prisma.user.create({
+   await prisma.despesa.create({
       data: {
-        usuario,
-        email,
-         senha: senhaCriptografada,
+
+        nome,
+
+        valor: parseFloat(valor),
+
+        categoriaId: Number(categoriaId),
+
+        data: new Date(data),
+
+        descricao,
       },
     });
 

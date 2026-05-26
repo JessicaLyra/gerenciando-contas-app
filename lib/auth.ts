@@ -1,11 +1,12 @@
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT, jwtVerify, JWTPayload } from "jose";
+
 
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET
 );
 
 // Criar token
-export async function createToken(payload: object) {
+export async function createToken(payload: JWTPayload) {
 
   const token = await new SignJWT(payload)
 
