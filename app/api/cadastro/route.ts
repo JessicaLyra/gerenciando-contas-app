@@ -35,11 +35,13 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    console.error("🔥 ERRO COMPLETO:", error);
+    console.log("🔥 ERRO COMPLETO:");
+    console.log(JSON.stringify(error, null, 2));
+    console.log(error?.stack);
 
     return NextResponse.json(
       {
-        message: "Erro interno no servidor",
+        message: "Erro interno",
         error: error?.message,
       },
       { status: 500 }
