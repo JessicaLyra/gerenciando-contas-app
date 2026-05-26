@@ -3,6 +3,9 @@ import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
+  console.log("🔥 CADASTRO INICIOU");
+
+  console.log("DATABASE_URL:", process.env.DATABASE_URL);
   try {
     const body = await request.json();
     console.log("BODY:", body);
