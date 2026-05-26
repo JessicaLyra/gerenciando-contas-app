@@ -1,99 +1,142 @@
 # Gerenciando Contas App
 
-Aplicação web em Next.js para controle de despesas com funcionalidades de login e cadastro de usuário.
+Sistema Full Stack para gerenciamento de despesas pessoais desenvolvido com Next.js, React, TypeScript, Prisma e PostgreSQL.
 
-## Sobre
+## Tecnologias Utilizadas
 
-Este projeto é um sistema simples de despesas onde o usuário pode se cadastrar, fazer login e usar uma interface para gerenciar contas.
-
-Ele utiliza:
-- Next.js (App Router)
+- Next.js 16 (App Router)
 - React
 - TypeScript
-- Prisma com PostgreSQL
-- NextAuth (Credentials)
-- bcrypt para hashing de senha
+- Prisma ORM
+- PostgreSQL
+- NextAuth
+- bcrypt
 - React Hook Form
+- Tailwind CSS
 
 ## Funcionalidades
 
-- Cadastro de usuário com criptografia de senha
-- Login com validação de email e senha
-- Rotas de API para login e cadastro
-- Integração com banco PostgreSQL via Prisma
+### Autenticação
 
-## Pré-requisitos
+- Cadastro de usuários
+- Login com email e senha
+- Senhas armazenadas com criptografia (bcrypt)
+- Controle de acesso às páginas protegidas
 
-- Node.js instalado (versão 18 ou superior recomendada)
-- PostgreSQL disponível localmente ou via serviço hospedado
-- Git instalado (para controle de versão)
+### Gerenciamento de Despesas
 
-## Configuração do ambiente
+- Cadastro de despesas
+- Cadastro de categorias
+- Associação de despesas a categorias
+- Armazenamento em banco PostgreSQL
+- Dashboard dinâmico alimentado pelo banco de dados
 
-Crie um arquivo `.env.local` na raiz do projeto com pelo menos a variável:
+### Dashboard
+
+- Exibição das categorias cadastradas
+- Exibição das despesas por categoria
+- Visualização dos detalhes da despesa
+- Cálculo do valor total das despesas
+- Interface responsiva
+
+## Estrutura do Banco de Dados
+
+### User
+
+| Campo | Tipo |
+|---------|---------|
+| id | Int |
+| usuario | String |
+| email | String |
+| senha | String |
+| createdAt | DateTime |
+
+### Categoria
+
+| Campo | Tipo |
+|---------|---------|
+| id | Int |
+| nome | String |
+| createdAt | DateTime |
+
+### Despesa
+
+| Campo | Tipo |
+|---------|---------|
+| id | Int |
+| nome | String |
+| valor | Decimal |
+| data | DateTime |
+| descricao | String |
+| categoriaId | Int |
+
+## Configuração
+
+Crie um arquivo `.env`:
 
 ```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/nome_do_banco"
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/database"
+JWT_SECRET="sua_chave_secreta"
+NEXTAUTH_SECRET="sua_chave_nextauth"
 ```
 
-> Se estiver usando um banco hospedado, ajuste a URL conforme as credenciais e host do serviço.
-
 ## Instalação
-
-No terminal, execute:
 
 ```bash
 npm install
 ```
 
-Em seguida, gere o cliente Prisma (se ainda não tiver sido gerado):
+Gerar cliente Prisma:
 
 ```bash
 npx prisma generate
 ```
 
-E aplique o esquema no banco com:
+Criar tabelas:
 
 ```bash
 npx prisma db push
 ```
 
-> Se preferir, use `npx prisma migrate dev --name init` para criar uma migration.
-
-## Executando o projeto
+## Executar Projeto
 
 ```bash
 npm run dev
 ```
 
-Acesse o app em:
+Aplicação disponível em:
 
-```bash
+```txt
 http://localhost:3000
 ```
 
-## Scripts úteis
+## Build de Produção
 
-- `npm run dev` — inicia o servidor de desenvolvimento
-- `npm run build` — cria a versão de produção
-- `npm run start` — inicia a aplicação em modo de produção
-- `npm run lint` — executa o ESLint
+```bash
+npm run build
+npm run start
+```
 
-## Estrutura principal
+## Scripts
 
-- `app/` — páginas e rotas do Next.js
-- `components/` — componentes reutilizáveis
-- `app/api/login/route.ts` — rota de login
-- `app/api/cadastro/route.ts` — rota de cadastro
-- `app/api/auth/[...nextauth]/route.ts` — configuração de autenticação
-- `lib/prisma.ts` — conexão com o banco
-- `prisma/schema.prisma` — modelo de dados do Prisma
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-## Observações
+## Próximas Melhorias
 
-- O projeto já possui a lógica de cadastro e login.
-- O esquema do Prisma define a tabela `User` com campos `usuario`, `email`, `senha` e `createdAt`.
-- A autenticação por `next-auth` está configurada com `CredentialsProvider`.
+- Edição de despesas
+- Exclusão de despesas
+- Filtros por categoria
+- Relatórios financeiros
+- Gráficos de gastos
+- Dashboard avançado
 
+## Autor
 
+Jessica Lyra
 
+Desenvolvedora Web Full Stack
