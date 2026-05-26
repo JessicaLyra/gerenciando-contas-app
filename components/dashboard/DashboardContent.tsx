@@ -1,7 +1,5 @@
-import { Despesa } from "@prisma/client";
-
 type Props = {
-  activeDespesa: Despesa | null;
+  activeDespesa: any;
   isTotal: boolean;
   totalGeral: number;
 };
