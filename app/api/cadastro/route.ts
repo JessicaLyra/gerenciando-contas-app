@@ -1,5 +1,8 @@
 // Importa o NextResponse do Next.js
 // Ele serve para devolver respostas da API
+console.log("🔥 CADASTRO API CHAMOU");
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
@@ -66,7 +69,8 @@ export async function POST(request: Request) {
     // Agora mostramos o erro real no terminal
   // com mais destaque para descobrir o problema
      console.error("ERRO REAL:", error);
-
+      console.log("❌ ERRO CADASTRO:", error);
+      
     // Retorno caso aconteça erro inesperado
     return NextResponse.json(
       {
