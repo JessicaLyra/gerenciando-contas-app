@@ -1,7 +1,6 @@
 // Importa o NextResponse do Next.js
 // Ele serve para devolver respostas da API
-console.log("🔥 CADASTRO API CHAMOU");
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
 
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
@@ -14,7 +13,10 @@ import { prisma } from "@/lib/prisma";
 // Função POST porque estamos enviando dados novos
 // (cadastro de usuário)
 export async function POST(request: Request) {
+    console.log("🔥 CADASTRO CHAMADO");
+  console.log("ENV DATABASE_URL:", process.env.DATABASE_URL);
 
+  return Response.json({ ok: true }); 
   // Recebe os dados enviados pelo formulário
   const body = await request.json();
 
