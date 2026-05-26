@@ -1,3 +1,6 @@
 export async function POST() {
-  return Response.json({ ok: true });
+  return Response.json({
+    ok: true,
+    message: "FUNCIONANDO",
+  });
 }
