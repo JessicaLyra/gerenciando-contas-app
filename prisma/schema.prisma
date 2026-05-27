@@ -15,14 +15,14 @@ datasource db {
 
 // Tabela de usuários
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   usuario   String
-  email     String   @unique
+  email     String    @unique
   senha     String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  despesas  Despesa[]
 }
 
-// Tabela de despesas
 model Despesa {
   id Int @id @default(autoincrement())
 
@@ -39,6 +39,10 @@ model Despesa {
   categoriaId Int
 
   categoria Categoria @relation(fields: [categoriaId], references: [id])
+
+  userId Int
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 // Tabela de categorias
