@@ -68,8 +68,7 @@ export default function DashboardLayout({ categorias }: Props) {
   const activeDespesa = useMemo(() => {
     for (const categoria of categorias) {
       const despesa = categoria.despesas.find(
-        `despesa-${d.id}` === activeId
-      );
+      (d: any) => `despesa-${d.id}` === activeId);
 
       if (despesa) return despesa;
     }
