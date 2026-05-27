@@ -36,12 +36,12 @@ export default function DashboardLayout({ categorias }: Props) {
   // 🔥 MENU DO SIDEBAR (categorias + despesas)
   // ------------------------------------------------------------
   const menu = categorias.map((categoria: any) => ({
-    id: categoria.id.toString(),
+    id: `categoria-${categoria.id}`,
     label: categoria.nome,
     description: `Categoria: ${categoria.nome}`,
 
       subItems: categoria.despesas.map((despesa: any) => ({
-      id: despesa.id.toString(),
+      id: `despesa-${despesa.id}`,
       label: despesa.nome,
       description: despesa.descricao,
       amount: `R$ ${Number(despesa.valor).toFixed(2)}`,
@@ -68,7 +68,7 @@ export default function DashboardLayout({ categorias }: Props) {
   const activeDespesa = useMemo(() => {
     for (const categoria of categorias) {
       const despesa = categoria.despesas.find(
-        (d: any) => d.id.toString() === activeId
+        `despesa-${d.id}` === activeId
       );
 
       if (despesa) return despesa;
