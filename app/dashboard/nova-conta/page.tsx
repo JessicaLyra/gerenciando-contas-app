@@ -3,7 +3,7 @@
 import ExpenseForm from "@/components/forms/ExpenseForm";
 import SelectForm from "@/components/forms/SelectForm";
 import { useForm } from "react-hook-form";
-
+import { useEffect, useState } from "react";
 
 type LoginFormValues = {
   nome: string;
@@ -11,6 +11,11 @@ type LoginFormValues = {
   categoriaId: string;
   data: string;
   descricao: string;
+};
+
+type Categoria = {
+  id: number;
+  nome: string;
 };
 
 export default function NovaContaPage() {
@@ -23,7 +28,22 @@ export default function NovaContaPage() {
       isSubmitting,
     },
   } = useForm<LoginFormValues>();
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
 
+    useEffect(() => {
+
+      async function carregarCategorias() {
+
+        const response = await fetch("/api/categorias");
+
+        const data = await response.json();
+
+        setCategorias(data);
+      }
+
+      carregarCategorias();
+
+    }, []);
 
   async function onSubmit(data: LoginFormValues) {
 
@@ -113,26 +133,17 @@ export default function NovaContaPage() {
               Selecione
             </option>
 
-            <option
-              className="bg-slate-900 text-white"
-              value="1"
-            >
-              Casa
-            </option>
+            {categorias.map((categoria) => (
 
-            <option
-              className="bg-slate-900 text-white"
-              value="2"
-            >
-              Estudos
-            </option>
+              <option
+                key={categoria.id}
+                className="bg-slate-900 text-white"
+                value={categoria.id}
+              >
+                {categoria.nome}
+              </option>
 
-            <option
-              className="bg-slate-900 text-white"
-              value="3"
-            >
-              Lazer
-            </option>
+            ))}
 
           </SelectForm>
 
