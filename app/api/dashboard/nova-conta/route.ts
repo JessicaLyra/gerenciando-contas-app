@@ -1,68 +1,45 @@
-// Importa o NextResponse do Next.js
-// Ele serve para devolver respostas da API
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
-
-// Importa nossa conexão com o banco
-// criada no arquivo lib/prisma.ts
-import { prisma } from "../../../../lib/prisma";
-
-
-// Função POST porque estamos enviando dados novos
-// (cadastro de despesas)
 export async function POST(request: Request) {
-
-  // Recebe os dados enviados pelo formulário
-  const body = await request.json();
-
-  // Pegamos apenas os campos que precisamos
-  const {
-    nome,
-    valor,
-    categoriaId,
-    data,
-    descricao,
-    
-  } = body;
-
   try {
+    const body = await request.json();
 
-    
+    const { nome, valor, categoriaId, data, descricao } = body;
 
-   await prisma.despesa.create({
+    // 🔥 pega token do header/cookie
+    const token = request.headers.get("cookie")?.split("token=")[1];
+
+    if (!token) {
+      return NextResponse.json({ message: "Não autenticado" }, { status: 401 });
+    }
+
+    // 🔥 decodifica JWT
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+
+    const userId = decoded.id;
+
+    await prisma.despesa.create({
       data: {
-
         nome,
-
         valor: parseFloat(valor),
-
         categoriaId: Number(categoriaId),
-
         data: new Date(data),
-
         descricao,
+        userId, // 🔥 ESSENCIAL
       },
     });
 
-    // Retornamos sucesso
     return NextResponse.json({
-      message: "Cadastro realizado com sucesso",
+      message: "Despesa criada com sucesso",
     });
-
   } catch (error) {
+    console.error("ERRO REAL:", error);
 
-    // Agora mostramos o erro real no terminal
-  // com mais destaque para descobrir o problema
-     console.error("ERRO REAL:", error);
-
-    // Retorno caso aconteça erro inesperado
     return NextResponse.json(
-      {
-        message: "Erro interno no servidor",
-      },
-      {
-        status: 500,
-      }
+      { message: "Erro interno no servidor" },
+      { status: 500 }
     );
   }
 }
