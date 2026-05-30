@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import AuthLayout from "@/components/AuthLayout";
 import AuthInput from "@/components/AuthInput";
 import AuthButton from "@/components/AuthButton";
+import { Mail, Key } from 'lucide-react';
 
 type LoginFormData = {
 
@@ -85,7 +86,7 @@ export default function LoginPage() {
         <AuthInput
           label="Email"
           type="email"
-
+          icon={<Mail size={25} />}
           register={register("email", {
 
             required: "Digite seu email",
@@ -95,10 +96,11 @@ export default function LoginPage() {
         />
 
         {/* SENHA */}
+        
         <AuthInput
           label="Senha"
           type="password"
-
+          icon={<Key size={25} />}
           register={register("senha", {
 
             required: "Digite sua senha",
@@ -121,7 +123,7 @@ export default function LoginPage() {
 
           <Link
             href="/cadastro"
-            className="text-blue-400"
+            className="text-cyan-500"
           >
             Criar conta
           </Link>

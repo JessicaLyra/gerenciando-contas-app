@@ -2,12 +2,23 @@
 
 import ExpenseForm from "@/components/forms/ExpenseForm";
 import SelectForm from "@/components/forms/SelectForm";
+
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 
+import Image from "next/image";
+
+import {
+  User,
+  Banknote,
+  ChartBarStacked,
+  CalendarClock,
+  NotepadText
+} from "lucide-react";
+
 type LoginFormValues = {
   nome: string;
-  valor: number;
+  valor: string;
   categoriaId: string;
   data: string;
   descricao: string;
@@ -23,178 +34,201 @@ export default function NovaContaPage() {
   const {
     register,
     handleSubmit,
-    formState: {
-      errors,
-      isSubmitting,
-    },
   } = useForm<LoginFormValues>();
-    const [categorias, setCategorias] = useState<Categoria[]>([]);
 
-    useEffect(() => {
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
 
-      async function carregarCategorias() {
+  useEffect(() => {
 
-        const response = await fetch("/api/categorias");
+    async function carregarCategorias() {
 
-        const data = await response.json();
+      const response = await fetch("/api/categorias");
 
-        setCategorias(data);
-      }
+      const data = await response.json();
 
-      carregarCategorias();
+      setCategorias(data);
+    }
 
-    }, []);
+    carregarCategorias();
+
+  }, []);
 
   async function onSubmit(data: LoginFormValues) {
+    alert("submit executado");
 
-    const response = await fetch("/api/dashboard/nova-conta", {
+  console.log(data);
 
-      method: "POST",
+  const valorFormatado = Number(
+    data.valor
+      .toString()
+      .replace(/\./g, "")
+      .replace(",", ".")
+  );
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const payload = {
+    ...data,
+    valor: valorFormatado,
+  };
 
-      body: JSON.stringify(data),
-    });
+  const response = await fetch("/api/dashboard/nova-conta", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
-    const result = await response.json();
+  const result = await response.json();
 
-    alert(result.message);
-  }
+  alert(result.message);
+}
 
   return (
 
-    <div className="p-6 rounded-3xl bg-white/5">
+    <div className="p-6 rounded-3xl bg-slate-900">
 
-      <h1 className="text-2xl font-semibold">
+      <Image
+        className="mx-auto w-auto"
+        src="/assets/gerenciando-contas-logo.png"
+        alt="Logo"
+        width={200}
+        height={100}
+      />
+
+      <h1 className="mt-10 text-center text-2xl font-semibold">
         Nova conta de despesa
       </h1>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mt-6 space-y-5"
-      >
+      <div className="mt-10 lg:mx-auto w-5xl rounded-md px-3 py-2">
 
-        {/* NOME */}
-        <div className="text-white">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mt-6 space-y-5"
+        >
 
-          <label>
-            Nome da despesa
-          </label>
+          {/* NOME */}
+          <div className="text-white">
 
-          <ExpenseForm
-            nome="nome"
-            register={register("nome", {
-              required: true,
-              maxLength: 20,
-            })}
-          />
+            <ExpenseForm
+              label="Nome da despesa"
+              name="nome"
+              icon={<User size={20} />}
+              register={register("nome", {
+                required: true,
+                maxLength: 50,
+              })}
+            />
 
-        </div>
+          </div>
 
+          {/* VALOR */}
+          <div className="text-white">
 
-        {/* VALOR */}
-        <div className="text-white">
+            <ExpenseForm
+              label="Valor"
+              name="valor"
+              mask="currency"
+              type="text"
+              icon={<Banknote size={20} />}
+              register={register("valor", {
+                required: true,
+                
+              })}
+            />
 
-          <label>
-            Valor
-          </label>
+          </div>
 
-          <ExpenseForm
-          nome="valor"
-          type="number"
-          register={register("valor", {
-            required: true,
-            valueAsNumber: true,
-          })}
-        />
+          {/* CATEGORIA */}
+          <div className="text-white">
 
-        </div>
+            <label className="inline-flex items-center font-medium text-gray-100">
 
+              <span className="text-violet-500">
+                <ChartBarStacked size={20} />
+              </span>
 
-        {/* CATEGORIA */}
-        <div className="text-white">
+              <span className="ml-2">
+                Categoria
+              </span>
 
-          <label>
-            Categoria
-          </label>
+            </label>
 
-          <SelectForm
-            register={register("categoriaId", {
-              required: true,
-            })}
-          >
-
-            <option
-              className="bg-slate-900 text-white"
-              value=""
+            <SelectForm
+              register={register("categoriaId", {
+                required: true,
+              })}
             >
-              Selecione
-            </option>
-
-            {categorias.map((categoria) => (
 
               <option
-                key={categoria.id}
                 className="bg-slate-900 text-white"
-                value={categoria.id}
+                value=""
               >
-                {categoria.nome}
+                Selecione
               </option>
 
-            ))}
+              {categorias.map((categoria) => (
 
-          </SelectForm>
+                <option
+                  key={categoria.id}
+                  className="bg-slate-900 text-white"
+                  value={categoria.id}
+                >
+                  {categoria.nome}
+                </option>
 
-        </div>
+              ))}
 
+            </SelectForm>
 
-        {/* DATA */}
-        <div className="text-white">
+          </div>
 
-          <label>
-            Data
-          </label>
+          {/* DATA */}
+          <div className="text-white">
 
-          <ExpenseForm
-            type="date"
-            nome="data"
-            register={register("data", {
-              required: true,
-            })}
-          />
+            <ExpenseForm
+              label="Data"
+              name="data"
+              type="date"
+              icon={<CalendarClock size={20} />}
+              register={register("data", {
+                required: true,
+              })}
+            />
 
-        </div>
+          </div>
 
+          {/* DESCRIÇÃO */}
+          <div className="text-white">
 
-        {/* DESCRIÇÃO */}
-        <div className="text-white">
+            <ExpenseForm
+              label="Descrição"
+              name="descricao"
+              icon={<NotepadText size={20} />}
+              register={register("descricao", {
+                required: true,
+                maxLength: 100,
+              })}
+            />
 
-          <label>
-            Descrição
-          </label>
+          </div>
 
-          <ExpenseForm
-            nome="descricao"
-            register={register("descricao", {
-              required: true,
-              maxLength: 100,
-            })}
-          />
+          {/* BOTÃO */}
+          <button
+            type="submit"
+            className="
+              mt-6 rounded-xl
+              bg-violet-600
+              px-4 py-2
+              text-white
+              hover:bg-violet-500
+            "
+          >
+            Salvar despesa
+          </button>
 
-        </div>
+        </form>
 
-
-        {/* BOTÃO */}
-        <button
-          type="submit"
-          className="mt-6 rounded-xl bg-emerald-500 px-4 py-2 text-white hover:bg-emerald-400"
-        >
-          Salvar despesa
-        </button>
-
-      </form>
+      </div>
 
     </div>
   );

@@ -20,16 +20,16 @@ export async function POST(request: Request) {
 
     const userId = decoded.id;
 
-    await prisma.despesa.create({
-      data: {
-        nome,
-        valor: parseFloat(valor),
-        categoriaId: Number(categoriaId),
-        data: new Date(data),
-        descricao,
-        userId, // 🔥 ESSENCIAL
-      },
-    });
+  await prisma.despesa.create({
+    data: {
+      nome,
+      valor: Number(valor),
+      categoriaId: Number(categoriaId),
+      data: new Date(data),
+      descricao,
+      userId,
+    },
+  });
 
     return NextResponse.json({
       message: "Despesa criada com sucesso",

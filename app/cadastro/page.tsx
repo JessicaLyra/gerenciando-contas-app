@@ -10,6 +10,8 @@ import Link from "next/link";
 import AuthLayout from "@/components/AuthLayout";
 import AuthInput from "@/components/AuthInput";
 
+import { User, Mail, UserLock, ShieldCheck } from 'lucide-react';
+
 export default function CadastroForm() {
 
   // React Hook Form
@@ -70,6 +72,8 @@ export default function CadastroForm() {
 
           label="Usuário"
 
+          icon={<User size={25} />}
+
           register={register("usuario", {
 
             required: true,
@@ -82,7 +86,7 @@ export default function CadastroForm() {
         <AuthInput
 
           label="Email"
-
+          icon={<Mail size={25} />}
           type="email"
 
           register={register("email", {
@@ -97,7 +101,7 @@ export default function CadastroForm() {
         <AuthInput
 
           label="Senha"
-
+          icon={<UserLock size={25} />}
           type="password"
 
           register={register("senha", {
@@ -112,7 +116,7 @@ export default function CadastroForm() {
         <AuthInput
 
           label="Confirmar senha"
-
+          icon={<ShieldCheck size={25} />}
           type="password"
 
           register={register("confirmarSenha", {
@@ -139,7 +143,7 @@ export default function CadastroForm() {
 
             <Link
               href="/login"
-              className="text-blue-400"
+              className="text-cyan-500"
             >
               Fazer login
             </Link>

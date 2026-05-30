@@ -16,6 +16,9 @@ type AuthInputProps = {
 
   // Mensagem de erro
   error?: string;
+
+    // Ícone
+  icon?: React.ReactNode;
 };
 
 export default function AuthInput({
@@ -24,6 +27,7 @@ export default function AuthInput({
   placeholder,
   register,
   error,
+  icon,
 }: AuthInputProps) {
 
   return (
@@ -31,8 +35,9 @@ export default function AuthInput({
     <div>
 
       {/* Label */}
-      <label className="block text-sm font-medium text-gray-100">
-        {label}
+      <label className="inline-flex  text-start font-medium text-gray-100">
+        <span className="text-violet-500">{icon}</span>
+        <span className="ml-2">{label}</span>
       </label>
 
       {/* Input */}

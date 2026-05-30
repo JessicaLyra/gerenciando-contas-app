@@ -29,7 +29,7 @@ export default function AuthButton({
 
       className="
         flex w-full justify-center rounded-md
-        bg-indigo-500 px-3 py-2
+        bg-[#6D5DF6] px-3 py-2
         text-sm font-semibold text-white
 
         hover:bg-indigo-400

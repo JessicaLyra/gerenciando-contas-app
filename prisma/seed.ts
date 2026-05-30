@@ -8,6 +8,11 @@ async function main() {
       { nome: "Moradia" },
       { nome: "Lazer" },
       { nome: "Saúde" },
+      { nome: "Educação" },
+      { nome: "Roupas" },
+      { nome: "Tecnologia" },
+      { nome: "Viagem" },
+      { nome: "Outros" },
     ],
   });
 

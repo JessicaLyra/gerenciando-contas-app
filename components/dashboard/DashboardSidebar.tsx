@@ -20,8 +20,8 @@ export default function DashboardSidebar({
           {/* botão principal */}
           <button
             onClick={() => onChange(item.id)}
-            className={`flex w-full justify-between rounded-2xl px-4 py-3 ${
-              activeId === item.id ? "bg-slate-700 text-white" : "bg-slate-950/60 text-slate-300"
+            className={`flex w-full justify-between rounded-2xl px-4 py-3  hover:bg-indigo-500 transition duration-300 ease-in-out ${
+              activeId === item.id ? "bg-indigo-700 text-white " : "bg-slate-950/60 text-slate-300"
             }`}
           >
             <span>{item.label}</span>
