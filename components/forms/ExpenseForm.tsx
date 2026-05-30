@@ -65,7 +65,6 @@ export default function ExpenseForm({
       <div className="mt-2">
 
         <input
-          name={nome}
           type={type}
           placeholder={placeholder}
           step={type === "number" ? "0.01" : undefined}
