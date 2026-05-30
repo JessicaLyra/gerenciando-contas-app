@@ -20,7 +20,6 @@ type AuthLayoutProps = {
 export default function AuthLayout({
   title,
   children,
-  icon,
 }: AuthLayoutProps) {
 
   return (
