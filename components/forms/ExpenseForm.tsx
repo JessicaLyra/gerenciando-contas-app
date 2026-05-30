@@ -1,7 +1,6 @@
 "use client";
 
 type ExpenseFormProps = {
-  nome: string;
   label: string;
   type?: string;
   placeholder?: string;
