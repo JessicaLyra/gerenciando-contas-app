@@ -111,7 +111,6 @@ export default function NovaContaPage() {
 
             <ExpenseForm
               label="Nome da despesa"
-              name="nome"
               icon={<User size={20} />}
               register={register("nome", {
                 required: true,
@@ -126,7 +125,6 @@ export default function NovaContaPage() {
 
             <ExpenseForm
               label="Valor"
-              name="valor"
               mask="currency"
               type="text"
               icon={<Banknote size={20} />}
@@ -187,7 +185,6 @@ export default function NovaContaPage() {
 
             <ExpenseForm
               label="Data"
-              name="data"
               type="date"
               icon={<CalendarClock size={20} />}
               register={register("data", {
@@ -202,7 +199,6 @@ export default function NovaContaPage() {
 
             <ExpenseForm
               label="Descrição"
-              name="descricao"
               icon={<NotepadText size={20} />}
               register={register("descricao", {
                 required: true,
