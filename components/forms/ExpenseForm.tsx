@@ -35,7 +35,6 @@ function formatCurrency(value: string) {
 }
 
 export default function ExpenseForm({
-  nome,
   label,
   type = "text",
   placeholder,
