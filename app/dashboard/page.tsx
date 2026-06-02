@@ -3,16 +3,18 @@
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { prisma } from "@/lib/prisma";
 
-
 export default async function Page() {
 
-  // Busca categorias no banco
-  const categorias = await prisma.categoria.findMany({
+  const categoriasRaw = await prisma.categoria.findMany({
     include: {
       despesas: true,
     },
   });
 
+  const categorias = JSON.parse(
+    JSON.stringify(categoriasRaw)
+  );
+  
   return (
     <DashboardLayout categorias={categorias} />
   );

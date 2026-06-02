@@ -14,11 +14,21 @@ type Props = {
 export default function DashboardLayout({ categorias }: Props) {
   const router = useRouter();
 
-  // 🔥 ID do item selecionado (categoria ou despesa ou "total")
+  //  ID do item selecionado (categoria ou despesa ou "total")
   const [activeId, setActiveId] = useState("total");
 
+    const mode = useMemo(() => {
+    if (activeId === "total") return "total";
+
+    if (activeId.startsWith("categoria-")) return "categoria";
+
+    if (activeId.startsWith("despesa-")) return "despesa";
+
+    return "dashboard";
+  }, [activeId]);
+
   // ------------------------------------------------------------
-  // 🔥 SOMA TOTAL DE TODAS AS DESPESAS (dashboard geral)
+  //  SOMA TOTAL DE TODAS AS DESPESAS (dashboard geral)
   // ------------------------------------------------------------
   const totalGeral = useMemo(() => {
     return categorias.reduce((acc: number, categoria: any) => {
@@ -32,8 +42,9 @@ export default function DashboardLayout({ categorias }: Props) {
     }, 0);
   }, [categorias]);
 
+  
   // ------------------------------------------------------------
-  // 🔥 MENU DO SIDEBAR (categorias + despesas)
+  //  MENU DO SIDEBAR (categorias + despesas)
   // ------------------------------------------------------------
   const menu = categorias.map((categoria: any) => ({
     id: `categoria-${categoria.id}`,
@@ -49,7 +60,7 @@ export default function DashboardLayout({ categorias }: Props) {
   }));
 
   // ------------------------------------------------------------
-  // 🔥 ADICIONA ITEM "TOTAL" NO TOPO DO MENU
+  //  ADICIONA ITEM "TOTAL" NO TOPO DO MENU
   // ------------------------------------------------------------
   const menuWithTotal = [
     {
@@ -63,7 +74,7 @@ export default function DashboardLayout({ categorias }: Props) {
   ];
 
   // ------------------------------------------------------------
-  // 🔥 DESPESA ATIVA (quando usuário clica em uma despesa)
+  //  DESPESA ATIVA (quando usuário clica em uma despesa)
   // ------------------------------------------------------------
   const activeDespesa = useMemo(() => {
     for (const categoria of categorias) {
@@ -77,12 +88,32 @@ export default function DashboardLayout({ categorias }: Props) {
   }, [activeId, categorias]);
 
   // ------------------------------------------------------------
-  // 🔥 VERIFICA SE USUÁRIO CLICOU EM "TOTAL"
+  //  CATEGORIA ATIVA (quando usuário clica em uma categoria)
   // ------------------------------------------------------------
-  const isTotal = activeId === "total";
+  const activeCategoria = useMemo(() => {
+    for (const categoria of categorias) {
+      if (`categoria-${categoria.id}` === activeId) {
+        return categoria;
+      }
+    }
+    
+    return null;
+  }, [activeId, categorias]);
 
   // ------------------------------------------------------------
-  // 🔥 LOGOUT
+  //  TOTAL DA CATEGORIA ATIVA
+  // ------------------------------------------------------------
+  const totalCategoria = useMemo(() => {
+    if (!activeCategoria) return 0;
+
+    return activeCategoria.despesas.reduce((sum: number, d: any) => {
+      return sum + Number(d.valor);
+    }, 0);
+  }, [activeCategoria]);
+
+ 
+  // ------------------------------------------------------------
+  //  LOGOUT
   // ------------------------------------------------------------
   async function handleLogout() {
     await fetch("/api/logout", { method: "POST" });
@@ -108,9 +139,11 @@ export default function DashboardLayout({ categorias }: Props) {
 
           {/* CONTENT */}
           <DashboardContent
+            mode={mode}
             activeDespesa={activeDespesa}
-            isTotal={isTotal}
+            activeCategoria={activeCategoria}
             totalGeral={totalGeral}
+            totalCategoria={totalCategoria}
           />
 
         </div>

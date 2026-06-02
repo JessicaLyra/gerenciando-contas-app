@@ -1,19 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
-// Prisma Client
 generator client {
   provider = "prisma-client-js"
 }
 
-// Conexão com o banco
 datasource db {
   provider = "postgresql"
 }
 
-// Tabela de usuários
 model User {
   id        Int       @id @default(autoincrement())
   usuario   String
@@ -24,34 +16,28 @@ model User {
 }
 
 model Despesa {
-  id Int @id @default(autoincrement())
-
-  nome String
-
-  valor Decimal @db.Decimal(10, 2)
-
-  data DateTime
-
-  descricao String
-
-  createdAt DateTime @default(now())
-
+  id          Int       @id @default(autoincrement())
+  nome        String
+  valor       Decimal   @db.Decimal(10, 2)
+  data        DateTime
+  pago Boolean @default(false)
+  descricao   String
+  createdAt   DateTime  @default(now())
   categoriaId Int
-
-  categoria Categoria @relation(fields: [categoriaId], references: [id])
-
-  userId Int
-
-  user User @relation(fields: [userId], references: [id])
+  userId      Int
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 }
 
-// Tabela de categorias
 model Categoria {
-  id Int @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
+  nome      String    @unique
+  createdAt DateTime  @default(now())
+  despesas  Despesa[]
+}
 
-  nome String @unique
-
-  createdAt DateTime @default(now())
-
-  despesas Despesa[]
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
 }
