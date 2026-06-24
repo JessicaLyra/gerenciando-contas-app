@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import DashboardHeader from "./DashboardHeader";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardContent from "./DashboardContent";
+import { normalizeKey } from "@/utils/normalizeKey";
 
 type Props = {
   categorias: any[];
@@ -27,20 +28,29 @@ export default function DashboardLayout({ categorias }: Props) {
     return "dashboard";
   }, [activeId]);
 
-  // ------------------------------------------------------------
-  //  SOMA TOTAL DE TODAS AS DESPESAS (dashboard geral)
-  // ------------------------------------------------------------
-  const totalGeral = useMemo(() => {
-    return categorias.reduce((acc: number, categoria: any) => {
-      return (
-        acc +
-        categoria.despesas.reduce(
-  (sum: number, d: any) => sum + Number(d.valor),
-  0
-)
-      );
-    }, 0);
-  }, [categorias]);
+// ------------------------------------------------------------
+// TODAS AS DESPESAS
+// ------------------------------------------------------------
+const todasDespesas = categorias.flatMap(
+  (categoria: any) => categoria.despesas
+);
+
+// ------------------------------------------------------------
+// SOMA TOTAL DE TODAS AS DESPESAS
+// ------------------------------------------------------------
+const totalGeral = useMemo(() => {
+  return categorias.reduce((acc: number, categoria: any) => {
+    return (
+      acc +
+      categoria.despesas.reduce(
+        (sum: number, d: any) => sum + Number(d.valor),
+        0
+      )
+    );
+  }, 0);
+}, [categorias]);
+
+  
 
   
   // ------------------------------------------------------------
@@ -49,11 +59,13 @@ export default function DashboardLayout({ categorias }: Props) {
   const menu = categorias.map((categoria: any) => ({
     id: `categoria-${categoria.id}`,
     label: categoria.nome,
+    icon: normalizeKey(categoria.nome), 
     description: `Categoria: ${categoria.nome}`,
 
       subItems: categoria.despesas.map((despesa: any) => ({
       id: `despesa-${despesa.id}`,
       label: despesa.nome,
+      icon: "despesa",
       description: despesa.descricao,
       amount: `R$ ${Number(despesa.valor).toFixed(2)}`,
     })),
@@ -66,6 +78,7 @@ export default function DashboardLayout({ categorias }: Props) {
     {
       id: "total",
       label: "Total",
+      icon: "total",
       description: "Soma de todas as despesas",
       amount: `R$ ${totalGeral.toFixed(2)}`,
       subItems: [],
@@ -123,7 +136,7 @@ export default function DashboardLayout({ categorias }: Props) {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <div className="mx-auto max-w-7xl p-6 space-y-6">
+      <div className="mx-auto max-w-full p-6 space-y-6">
 
         {/* HEADER */}
         <DashboardHeader onLogout={handleLogout} />
@@ -135,6 +148,7 @@ export default function DashboardLayout({ categorias }: Props) {
             menu={menuWithTotal}
             activeId={activeId}
             onChange={setActiveId}
+           
           />
 
           {/* CONTENT */}
@@ -144,6 +158,8 @@ export default function DashboardLayout({ categorias }: Props) {
             activeCategoria={activeCategoria}
             totalGeral={totalGeral}
             totalCategoria={totalCategoria}
+            despesas={todasDespesas}
+            categorias={categorias}
           />
 
         </div>

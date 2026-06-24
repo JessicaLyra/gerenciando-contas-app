@@ -54,7 +54,7 @@ export default function NovaContaPage() {
   }, []);
 
   async function onSubmit(data: LoginFormValues) {
-    alert("submit executado");
+   
 
   console.log(data);
 

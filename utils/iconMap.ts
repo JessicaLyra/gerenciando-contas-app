@@ -1,0 +1,29 @@
+import {
+  Utensils,
+  Bus,
+  Home,
+  Gamepad2,
+  HeartPulse,
+  GraduationCap,
+  Shirt,
+  Laptop,
+  Plane,
+  MoreHorizontal,
+    Wallet,
+    
+} from "lucide-react";
+
+export const iconMap: Record<string, any> = {
+  alimentacao: Utensils,
+  transporte: Bus,
+  moradia: Home,
+  lazer: Gamepad2,
+  saude: HeartPulse,
+  educacao: GraduationCap,
+  roupas: Shirt,
+  tecnologia: Laptop,
+  viagem: Plane,
+  outros: MoreHorizontal,
+  despesa: Wallet,
+  totalGeral: Wallet
+};

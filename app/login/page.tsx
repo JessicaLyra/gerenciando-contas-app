@@ -75,7 +75,8 @@ export default function LoginPage() {
 
   return (
 
-    <AuthLayout title="Login">
+    
+    <AuthLayout title="Bem-vindo de volta!" descricao="Faça login para gerenciar suas contas.">
 
       <form
         onSubmit={handleSubmit(handleLogin)}
@@ -117,7 +118,7 @@ export default function LoginPage() {
         />
 
         {/* LINK CADASTRO */}
-        <p className="text-center text-white">
+        {/*<p className="text-center text-white">
 
           Ainda não tem cadastro?{" "}
 
@@ -128,7 +129,7 @@ export default function LoginPage() {
             Criar conta
           </Link>
 
-        </p>
+        </p>*/}
 
       </form>
 

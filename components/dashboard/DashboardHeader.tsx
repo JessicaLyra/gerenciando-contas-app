@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Plus, LogOut } from 'lucide-react';
+import { gradients } from "@/lib/styles";
 
 type Props = {
   onLogout: () => void;
@@ -8,7 +10,7 @@ type Props = {
 export default function DashboardHeader({ onLogout }: Props) {
   return (
     <header className="rounded-3xl bg-slate-900/80 p-6 border border-white/10 w-full flex items-center justify-between">
-       <div className="w-40">
+       <div className="w-50">
        <Image
                 className="  "
                 src="/assets/gerenciando-contas-logo-horizontal.png"
@@ -17,19 +19,27 @@ export default function DashboardHeader({ onLogout }: Props) {
                   height={200}
               />
        </div>
-       <div className="inline-block justify-between w-60">
+       <div className="inline-block justify-between w-80 float-end">
      
           <Link
             href="/dashboard/nova-conta"
-            className="mt-4 inline-block rounded-xl bg-cyan-500 px-4 py-2 "
+            className={`${gradients.primary} p-4 rounded-4xl   hover:brightness-110
+  hover:scale-[1.02]
+  transition-all duration-300 ease-in-out`}
             >
-            Nova Despesa
+            <Plus className="mr-2 inline" />Nova Despesa
           </Link>
           <button
             onClick={onLogout}
-            className="mt-4 ml-4 bg-red-500 px-4 py-2 rounded-xl mr-5 "
+            className="mt-4 ml-4 bg-gradient-to-r from-[#D9465F] to-[#EF4444]
+hover:from-[#E2556B] hover:to-[#F87171]
+transition-all duration-300 ease-in-out
+            px-9 py-3
+            rounded-4xl
+            shadow-[0_0_20px_rgba(239,68,68,.25)]
+            cursor-pointer"
           >
-            Sair
+            <LogOut className="mr-2 inline" />Sair
           </button>
        </div>
     </header>
