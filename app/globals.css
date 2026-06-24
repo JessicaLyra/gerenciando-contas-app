@@ -29,7 +29,19 @@ body {
   @apply bg-gradient-to-r from-[#2D6BFF] via-[#5B5DFF] to-[#7C4DFF];
 }
 
-.gradient-card {
+.button-transparent{
+    background: #c6c59d00;  
+    color: #4A5568;
+    border: 1px solid #A0AEC0;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.5s;
+}
+
+.button-transparent:hover{
+  background: #d4d6d8;
+}
+      .gradient-card {
   @apply bg-gradient-to-br from-[#08112D] to-[#111B46];
 }
 

@@ -9,8 +9,8 @@ type Props = {
 
 export default function DashboardHeader({ onLogout }: Props) {
   return (
-    <header className="rounded-3xl bg-slate-900/80 p-6 border border-white/10 w-full flex items-center justify-between">
-       <div className="w-50">
+    <header className="rounded-3xl bg-slate-900/80 p-6 border border-white/10 w-full md:flex sm:inline-block items-center justify-between">
+       <div className="md:w-50 sm:w-full ">
        <Image
                 className="  "
                 src="/assets/gerenciando-contas-logo-horizontal.png"
@@ -19,7 +19,7 @@ export default function DashboardHeader({ onLogout }: Props) {
                   height={200}
               />
        </div>
-       <div className="inline-block justify-between w-80 float-end">
+       <div className=" md:inline-block sm:flex md:justify-between md:w-80 sm:w-full md:float-end ">
      
           <Link
             href="/dashboard/nova-conta"

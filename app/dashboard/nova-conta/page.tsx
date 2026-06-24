@@ -2,9 +2,10 @@
 
 import ExpenseForm from "@/components/forms/ExpenseForm";
 import SelectForm from "@/components/forms/SelectForm";
-
+import AuthButton from "@/components/AuthButton";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import Image from "next/image";
 
@@ -13,7 +14,9 @@ import {
   Banknote,
   ChartBarStacked,
   CalendarClock,
-  NotepadText
+  NotepadText,
+  Save,
+  Undo2
 } from "lucide-react";
 
 type LoginFormValues = {
@@ -207,21 +210,29 @@ export default function NovaContaPage() {
             />
 
           </div>
-
+          <div className="flex inline-flex  mt-4 gap-5">
+    
           {/* BOTÃO */}
-          <button
-            type="submit"
-            className="
-              mt-6 rounded-xl
-              bg-violet-600
-              px-4 py-2
-              text-white
-              hover:bg-violet-500
-            "
-          >
-            Salvar despesa
-          </button>
-
+            <button
+              type="submit"
+              className="
+                mt-6 rounded-full
+                px-4 py-4
+                gradient-primary
+                transition-all duration-300 ease-in-out 
+              hover:brightness-130 flex inline-flex gap-2 cursor-pointer"
+              
+            >
+            <Save size={20} /> Salvar despesa 
+            </button>
+            <Link
+              href="/dashboard"
+              className="mt-6 px-4 py-4 button-transparent flex inline-flex gap-2 align-middle"
+            >
+            <Undo2 size={20} /> Voltar para o dashboard
+            </Link>
+         </div>
+      
         </form>
 
       </div>

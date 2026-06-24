@@ -153,7 +153,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
       {mode === "total" ? (
         <div className="space-y-6">
 
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-4 sm:grid-cols-5 gap-4">
 
             <div className="flex items-center   justify-between rounded-xl border border-white/10 bg-white p-4">
               <div >
@@ -232,10 +232,10 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
             </div>
 
           </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
 
   {/* GRÁFICO */}
-  <div className=" w-full rounded-xl bg-white/5 border border-white/10 p-4 flex inline-flex">
+  <div className=" w-full rounded-xl bg-white/5 border border-white/10 p-4 md:flex md:inline-flex sm:inline-block">
 
     <h2 className="mb-4 text-lg font-semibold text-white">
       Gastos por Categoria
@@ -333,10 +333,11 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                     >
                       <div class="grid grid-cols-12 gap-6 w-full">
                       
-                        <div class="col-span-2 bg-gray-600 h-12 my-1 mx-2 w-full rounded-md">
-                          <span className="text-white py-3 px-7  block rounded-md"><iconMap.totalGeral className="  "/></span>
+                        <div class="col-span-2 bg-indigo-500/20 h-12 my-1 mx-2 w-full rounded-md">
+                          <span className="text-indigo-400 py-3 px-3 md:px-7  block rounded-md"><iconMap.totalGeral className="  "/></span>
 
                         </div>
+                
   
                         <div class="col-span-7  py-0">
                           <p className="text-white">{d.nome}</p>
@@ -366,7 +367,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
   </div>
           <div className="rounded-xl bg-white/5 border border-white/10 p-4">
                       <h2 className="text-lg font-semibold mb-3">
-                        Próximos vencimentos
+                        Últimas Despesas
                       </h2>
 
                       <ul className="space-y-3">
@@ -381,9 +382,9 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                             <div className="grid grid-cols-12 gap-4 items-center">
 
                               {/* Ícone */}
-                              <div className="col-span-2">
+                              <div className="md:col-span-2 col-span-1">
 
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/20">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500/20">
 
                                   <span className="text-indigo-400">
                                     <iconMap.totalGeral />
@@ -394,7 +395,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                               </div>
 
                               {/* Nome + Categoria */}
-                              <div className="col-span-4">
+                              <div className="col-span-3 md:col-span-4">
 
                                 <p className="font-medium text-white">
                                   {d.nome}
@@ -407,16 +408,16 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                               </div>
 
                               {/* Valor */}
-                              <div className="col-span-2">
+                              <div className="md:col-span-2 col-span-3">
 
-                                <p className="font-bold text-white">
+                                <p className="font-bold text-white text-sm">
                                   R$ {Number(d.valor).toFixed(2)}
                                 </p>
 
                               </div>
 
                               {/* Data */}
-                              <div className="col-span-2">
+                              <div className="col-span-2 sm:col-span-none">
 
                                 <p className="text-xs text-slate-400">
                                   {new Date(d.data).toLocaleDateString("pt-BR")}
