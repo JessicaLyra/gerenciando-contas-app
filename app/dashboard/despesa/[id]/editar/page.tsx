@@ -1,4 +1,4 @@
-import { prisma, Prisma } from "@/lib/prisma";
+import { prisma} from "@/lib/prisma";
 import EditarDespesaForm from "@/components/forms/EditarDespesaForm";
 import Image from "next/image";
 

@@ -5,7 +5,6 @@ import { useState, useMemo } from "react";
 import {iconMap} from "@/utils/iconMap";
 import {CircleCheckBig,  Clock, WalletMinimal } from "lucide-react";
 import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, Sector, PieSectorDataItem, TooltipIndex} from "recharts";
-import { RechartsDevtools } from '@recharts/devtools';
 
 type Props = {
   mode: "total" | "categoria" | "despesa" | "dashboard";
@@ -242,7 +241,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
     </h2>
 
     <div className="h-64 w-100">
-      <ResponsiveContainer class="">
+      <ResponsiveContainer >
         <PieChart>
           <Pie
             data={dadosGrafico}
@@ -252,7 +251,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
             cy="60%"
             outerRadius={90}
             innerRadius={60}
-            label={({ percent }) =>
+              label={({ percent = 0 }) =>
               `${(percent * 100).toFixed(0)}%`
             }
           >
@@ -331,15 +330,15 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                       key={d.id}
                       className="border-b border-white/10 pb-2"
                     >
-                      <div class="grid grid-cols-12 gap-6 w-full">
+                      <div className="grid grid-cols-12 gap-6 w-full">
                       
-                        <div class="col-span-2 bg-indigo-500/20 h-12 my-1 mx-2 w-full rounded-md">
+                        <div className="col-span-2 bg-indigo-500/20 h-12 my-1 mx-2 w-full rounded-md">
                           <span className="text-indigo-400 py-3 px-3 md:px-7  block rounded-md"><iconMap.totalGeral className="  "/></span>
 
                         </div>
                 
   
-                        <div class="col-span-7  py-0">
+                        <div className="col-span-7  py-0">
                           <p className="text-white">{d.nome}</p>
                           <p className="text-yellow-400 text-sm mt-4">
                           Vence em {calcularDiasRestantes(d.data)} dias
@@ -347,7 +346,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                         </div>
 
                       
-                        <div class="col-span-3 md:col-span-3 py-0 px-4">
+                        <div className="col-span-3 md:col-span-3 py-0 px-4">
                           <p className="text- text-xs">
                           {new Date(d.data).toLocaleDateString("pt-BR")}
                         </p>

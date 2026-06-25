@@ -3,5 +3,6 @@ export type MenuItem = {
   label: string;
   description: string;
   amount?: string;
+  icon?: string;
   subItems?: MenuItem[];
 };

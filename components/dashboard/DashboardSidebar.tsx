@@ -65,9 +65,10 @@ export default function DashboardSidebar({
               <div className="mt-2 space-y-2 px-2">
 
                 {item.subItems.map((sub) => {
-                  console.log(sub.icon, iconMap[sub.icon]);
-                  const SubIcon = sub.icon ? iconMap[sub.icon] : iconMap.despesa;
-
+                  const SubIcon =
+                    sub.icon && sub.icon in iconMap
+                      ? iconMap[sub.icon as keyof typeof iconMap]
+                      : iconMap.despesa;
                   return (
                     <button
                       key={sub.id}
