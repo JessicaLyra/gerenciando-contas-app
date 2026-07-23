@@ -1,6 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, LogOut } from 'lucide-react';
+import { Plus, LogOut, Menu, X } from "lucide-react";
 import { gradients } from "@/lib/styles";
 
 type Props = {
@@ -8,40 +11,138 @@ type Props = {
 };
 
 export default function DashboardHeader({ onLogout }: Props) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <header className="rounded-3xl bg-slate-900/80 p-6 border border-white/10 w-full md:flex sm:inline-block items-center justify-between">
-       <div className="md:w-50 sm:w-full ">
-       <Image
-                className="  "
-                src="/assets/gerenciando-contas-logo-horizontal.png"
-                alt="Your Company"
-                  width={400}
-                  height={200}
-              />
-       </div>
-       <div className=" md:inline-block sm:flex md:justify-between md:w-80 sm:w-full md:float-end ">
-     
+    <header className="relative rounded-3xl bg-slate-900/80 border border-white/10 p-6">
+
+      {/* Cabeçalho */}
+      <div className="flex items-center justify-between">
+
+        {/* Logo */}
+        <Image
+          src="/assets/gerenciando-contas-logo-horizontal.png"
+          alt="Gerenciando Contas"
+          width={300}
+          height={120}
+          className="w-56 md:w-72 h-auto"
+        />
+
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-4">
+
           <Link
             href="/dashboard/nova-conta"
-            className={`${gradients.primary} p-4 rounded-4xl   hover:brightness-110
-  hover:scale-[1.02]
-  transition-all duration-300 ease-in-out`}
-            >
-            <Plus className="mr-2 inline" />Nova Despesa
+            className={`${gradients.primary}
+              px-6 py-3 rounded-full
+              hover:brightness-110
+              transition-all duration-300`}
+          >
+            <Plus className="inline mr-2" />
+            Nova Despesa
           </Link>
+
           <button
             onClick={onLogout}
-            className="mt-4 ml-4 bg-gradient-to-r from-[#D9465F] to-[#EF4444]
-hover:from-[#E2556B] hover:to-[#F87171]
-transition-all duration-300 ease-in-out
-            px-9 py-3
-            rounded-4xl
-            shadow-[0_0_20px_rgba(239,68,68,.25)]
-            cursor-pointer"
+            className="
+              px-6 py-3
+              rounded-full
+              bg-gradient-to-r
+              from-[#D9465F]
+              to-[#EF4444]
+              hover:from-[#E2556B]
+              hover:to-[#F87171]
+              transition-all duration-300
+              cursor-pointer
+            "
           >
-            <LogOut className="mr-2 inline" />Sair
+            <LogOut className="inline mr-2" />
+            Sair
           </button>
-       </div>
+
+        </div>
+
+        {/* Mobile */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="
+            md:hidden
+            p-2
+            rounded-xl
+            border border-violet-500/30
+            bg-slate-800
+            hover:bg-slate-700
+            transition
+          "
+        >
+          {menuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+
+      </div>
+
+      {/* Menu Mobile */}
+      {menuOpen && (
+
+        <div
+          className="
+            absolute
+            right-6
+            top-24
+            w-64
+            rounded-2xl
+            border
+            border-violet-500/20
+            bg-slate-900
+            shadow-2xl
+            p-4
+            flex
+            flex-col
+            gap-3
+            md:hidden
+            z-50
+          "
+        >
+
+          <Link
+            href="/dashboard/nova-conta"
+            onClick={() => setMenuOpen(false)}
+            className={`
+              ${gradients.primary}
+              rounded-xl
+              px-4
+              py-3
+              text-center
+            `}
+          >
+            <Plus className="inline mr-2" />
+            Nova Despesa
+          </Link>
+
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              onLogout();
+            }}
+            className="
+              rounded-xl
+              px-4
+              py-3
+              bg-gradient-to-r
+              from-[#D9465F]
+              to-[#EF4444]
+              hover:from-[#E2556B]
+              hover:to-[#F87171]
+              transition-all
+            "
+          >
+            <LogOut className="inline mr-2" />
+            Sair
+          </button>
+
+        </div>
+
+      )}
+
     </header>
   );
 }

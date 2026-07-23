@@ -1,15 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
-import {iconMap} from "@/utils/iconMap";
-import {CircleCheckBig,  Clock, WalletMinimal } from "lucide-react";
-import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, Sector, PieSectorDataItem, TooltipIndex} from "recharts";
+  import { useRouter } from "next/navigation";
+  import { useState, useMemo, useEffect } from "react";
+  import {iconMap} from "@/utils/iconMap";
+  import {CircleCheckBig,  Clock, WalletMinimal,  TriangleAlert, Gauge} from "lucide-react";
+  import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, Sector, PieSectorDataItem, TooltipIndex} from "recharts";
 
 type Props = {
-  mode: "total" | "categoria" | "despesa" | "dashboard";
+  mode: "total" | "categoria" | "categoria-total" | "despesa" | "dashboard";
   activeDespesa: any;
   activeCategoria?: any;
+  selectedMonthLabel?: string;
 
   // total geral de todas as despesas
   totalGeral: number;
@@ -31,22 +32,77 @@ export default function DashboardContent({
   totalCategoria,
   despesas = [],
   categorias = [],
+  selectedMonthLabel,
 }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [despesaAtual, setDespesaAtual] = useState(activeDespesa);
+  useEffect(() => {
+  setDespesaAtual(activeDespesa);
+}, [activeDespesa]);
 
   // estado local para atualização imediata da interface
 const [listaDespesas, setListaDespesas] = useState(despesas);
+  useEffect(() => {
+    setListaDespesas(despesas);
+  }, [despesas]);
 
-  // calcula dias restantes até vencimento
-  function calcularDiasRestantes(dataVencimento: string) {
-    const hoje = new Date();
-    const vencimento = new Date(dataVencimento);
 
-    const diferencaMs = vencimento.getTime() - hoje.getTime();
+  function parseDataSemFuso(value: string | Date) {
+  const texto = String(value).trim();
 
-    return Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
+  const match = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (match) {
+    const [, year, month, day] = match;
+
+    return new Date(
+      Date.UTC(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+      )
+    );
   }
+
+  const data = new Date(value);
+
+  return new Date(
+    Date.UTC(
+      data.getFullYear(),
+      data.getMonth(),
+      data.getDate()
+    )
+  );
+}
+
+  function formatarData(value: string | Date) {
+  const data = parseDataSemFuso(value);
+
+  return data.toLocaleDateString("pt-BR", {
+    timeZone: "UTC",
+  });
+}
+
+ // calcula dias restantes até vencimento
+function calcularDiasRestantes(dataVencimento: string | Date) {
+  const hoje = new Date();
+
+  const hojeUTC = Date.UTC(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    hoje.getDate()
+  );
+
+  const vencimento = parseDataSemFuso(dataVencimento);
+
+  const diferencaMs = vencimento.getTime() - hojeUTC;
+
+  return Math.round(
+    diferencaMs / (1000 * 60 * 60 * 24)
+  );
+}
+  
 
   // total pago (dinâmico)
   const totalPago = useMemo(() => {
@@ -122,6 +178,31 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
         "#F97316", // orange
         "#14B8A6", // teal
       ];
+
+      const maiorDespesa = useMemo(() => {
+  if (listaDespesas.length === 0) return null;
+
+  return listaDespesas.reduce((maior, atual) =>
+    Number(atual.valor) > Number(maior.valor) ? atual : maior
+  );
+}, [listaDespesas]);
+
+  const menorDespesa = useMemo(() => {
+    if (listaDespesas.length === 0) return null;
+
+    return listaDespesas.reduce((menor, atual) =>
+      Number(atual.valor) < Number(menor.valor) ? atual : menor
+    );
+  }, [listaDespesas]);
+
+  const mediaDespesas =
+    listaDespesas.length > 0
+      ? totalGeral / listaDespesas.length
+      : 0;
+
+  const categoriasUtilizadas = categorias.filter(
+    (categoria) => categoria.despesas.length > 0
+  ).length;
       
   return (
     <section className="rounded-3xl bg-white/5 p-6">
@@ -132,6 +213,8 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
         <p className="text-sm text-slate-400">
           {mode === "total"
             ? "Visão geral"
+            : mode === "categoria-total" && activeCategoria
+            ? "Resumo da categoria"
             : mode === "categoria" && activeCategoria
             ? "Categoria selecionada"
             : activeDespesa
@@ -142,85 +225,132 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
         <h1 className="text-xl font-semibold">
           {mode === "total"
             ? "Todas as despesas"
+            : mode === "categoria-total" && activeCategoria
+            ? `Resumo de ${activeCategoria.nome}`
             : mode === "categoria" && activeCategoria
             ? activeCategoria.nome
             : activeDespesa?.nome || "Resumo"}
         </h1>
+
+        {selectedMonthLabel && (
+          <p className="mt-2 inline-flex w-fit rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3 py-1 text-sm text-cyan-200">
+            {selectedMonthLabel}
+          </p>
+        )}
       </div>
 
       {/* MODE TOTAL */}
       {mode === "total" ? (
         <div className="space-y-6">
 
-          <div className="grid md:grid-cols-4 sm:grid-cols-5 gap-4">
-
-            <div className="flex items-center   justify-between rounded-xl border border-white/10 bg-white p-4">
-              <div >
-              <h4 className="text-lg font-semibold text-indigo-700 pb-5">Total Geral</h4>
-              <h2 className="text-3xl font-bold text-gray-800 pb-5">
-                R$ {totalGeral.toFixed(2)}
-              </h2>
-              </div>
-              <div className="rounded-full bg-green-100 p-3 ">
-              <span className="text-green-950"><iconMap.totalGeral /></span>
-              </div>
-            </div>
-
-            <div className="flex items-center   justify-between rounded-xl border border-white/10 bg-white p-4">
-               <div >
-              <h4 className="text-lg font-semibold text-indigo-700 pb-5">Total Pago</h4>
-              <h2 className="text-3xl font-bold text-gray-800 pb-5">
-                R$ {totalPago.toFixed(2)}
-              </h2>
-              </div>
-              <div className="rounded-full bg-green-100 p-3 ">
-              <span className="text-green-950"><CircleCheckBig /></span>
-              </div>
-            </div>
-
-            <div className="flex items-center   justify-between rounded-xl border border-white/10 bg-white p-4">
-               <div >
-              <h4 className="text-lg font-semibold text-indigo-700 pb-5">Pendente</h4>
-              <h2 className="text-3xl font-bold text-gray-800 pb-5">
-                R$ {totalPendente.toFixed(2)}
-              </h2>
-              </div>
-              <div className="rounded-full bg-yellow-100 p-3 ">
-              <span className="text-yellow-950"><Clock /></span>
-              </div>
-            </div>
-
-            <div className="flex items-center   justify-between rounded-xl border border-white/10 bg-white p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white p-4">
               <div>
-              <h4 className="text-lg font-semibold text-indigo-700 pb-5">Contas</h4>
-              <h2 className="text-3xl font-bold text-gray-800 pb-5">
-                {totalContas}
-              </h2>
+                <h4 className="text-sm sm:text-lg font-semibold text-indigo-700">
+                  Total Geral
+                </h4>
+
+                <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-800">
+                  R$ {totalGeral.toFixed(2)}
+                </h2>
               </div>
-              <div className="rounded-full bg-purple-200 p-3 ">
-              <span className="text-purple-800"><WalletMinimal /></span>
+
+              <div className="rounded-full bg-green-100 p-3 shrink-0">
+                <span className="text-green-950">
+                  <iconMap.totalGeral />
+                </span>
               </div>
             </div>
 
-            <div className="rounded-xl bg-white p-4 border border-white/10">
-              <h4 className="text-lg font-semibold text-indigo-700">
-                Vencidas
-              </h4>
 
-              <h2 className="text-3xl font-bold text-gray-800">
-                {contasVencidas}
-              </h2>
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white p-4">
+              <div>
+                <h4 className="text-sm sm:text-lg font-semibold text-indigo-700">
+                  Total Pago
+                </h4>
+
+                <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-800">
+                  R$ {totalPago.toFixed(2)}
+                </h2>
+              </div>
+
+              <div className="rounded-full bg-green-100 p-3 shrink-0">
+                <span className="text-green-950">
+                  <CircleCheckBig />
+                </span>
+              </div>
             </div>
+
+
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white p-4">
+              <div>
+                <h4 className="text-sm sm:text-lg font-semibold text-indigo-700">
+                  Pendente
+                </h4>
+
+                <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-800">
+                  R$ {totalPendente.toFixed(2)}
+                </h2>
+              </div>
+
+              <div className="rounded-full bg-yellow-100 p-3 shrink-0">
+                <span className="text-yellow-950">
+                  <Clock />
+                </span>
+              </div>
+            </div>
+
+
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white p-4">
+              <div>
+                <h4 className="text-sm sm:text-lg font-semibold text-indigo-700">
+                  Contas
+                </h4>
+
+                <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-800">
+                  {totalContas}
+                </h2>
+              </div>
+
+              <div className="rounded-full bg-purple-200 p-3 shrink-0">
+                <span className="text-purple-800">
+                  <WalletMinimal />
+                </span>
+              </div>
+            </div>
+
+
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white p-4">
+              <div>
+                <h4 className="text-sm sm:text-lg font-semibold text-indigo-700">
+                  Vencidas
+                </h4>
+
+                <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-800">
+                  {contasVencidas}
+                </h2>
+              </div>
+
+              <div className="rounded-full bg-red-200 p-3 shrink-0">
+                <span className="text-red-500">
+                  <TriangleAlert />
+                </span>
+              </div>
+            </div>
+
+
             <div className="rounded-xl bg-white p-4 border border-white/10">
-              <h4 className="text-lg font-semibold text-indigo-700">
+
+              <h4 className="text-sm sm:text-lg font-semibold text-indigo-700">
                 Percentual Pago
               </h4>
 
-              <h2 className="text-3xl font-bold text-gray-800">
+              <h2 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-800">
                 {percentualPago.toFixed(1)}%
               </h2>
 
-              <div className="mt-3 h-2 w-full rounded-full bg-slate-700">
+
+              <div className="mt-4 h-2 w-full rounded-full bg-slate-700">
                 <div
                   className="h-2 rounded-full bg-emerald-500 transition-all"
                   style={{
@@ -228,8 +358,8 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                   }}
                 />
               </div>
-            </div>
 
+            </div>
           </div>
         <div className="grid md:grid-cols-2 gap-4">
 
@@ -240,20 +370,21 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
       Gastos por Categoria
     </h2>
 
-    <div className="h-64 w-100">
-      <ResponsiveContainer >
-        <PieChart>
-          <Pie
+<div className="h-64 w-full max-w-full overflow-hidden">     
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+         <Pie
             data={dadosGrafico}
             dataKey="valor"
             nameKey="nome"
-            cx="30%"
-            cy="60%"
-            outerRadius={90}
-            innerRadius={60}
-              label={({ percent = 0 }) =>
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            innerRadius={50}
+            label={({ percent = 0 }) =>
               `${(percent * 100).toFixed(0)}%`
             }
+            labelLine={false}
           >
             {dadosGrafico.map((_, index) => (
               <Cell
@@ -311,7 +442,61 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
     </div>
 
   </div>
+<div className="rounded-xl bg-white/5 border border-white/10 p-4">
+  <h2 className="text-lg font-semibold mb-4">
+    💡 Insights
+  </h2>
 
+  <div className="space-y-4">
+
+    <div className="flex justify-between items-center border-b border-white/10 pb-3">
+      <div>
+        <p className="text-slate-400 text-sm">Maior despesa</p>
+        <p className="text-white font-medium">
+          {maiorDespesa?.nome ?? "-"}
+        </p>
+      </div>
+
+      <span className="font-bold text-red-400 ">
+        R$ {maiorDespesa ? Number(maiorDespesa.valor).toFixed(2) : "0.00"}
+      </span>
+    </div>
+
+    <div className="flex justify-between items-center border-b border-white/10 pb-3">
+      <div>
+        <p className="text-slate-400 text-sm">Menor despesa</p>
+        <p className="text-white font-medium">
+          {menorDespesa?.nome ?? "-"}
+        </p>
+      </div>
+
+      <span className="font-bold text-emerald-400">
+        R$ {menorDespesa ? Number(menorDespesa.valor).toFixed(2) : "0.00"}
+      </span>
+    </div>
+
+    <div className="flex justify-between items-center border-b border-white/10 pb-3">
+      <p className="text-slate-400 text-sm">
+        Média por despesa
+      </p>
+
+      <span className="font-bold text-white">
+        R$ {mediaDespesas.toFixed(2)}
+      </span>
+    </div>
+
+    <div className="flex justify-between items-center">
+      <p className="text-slate-400 text-sm">
+        Categorias utilizadas
+      </p>
+
+      <span className="font-bold text-indigo-400">
+        {categoriasUtilizadas}
+      </span>
+    </div>
+
+  </div>
+</div>
   {/* BLOCO FUTURO */}
   <div className="rounded-xl bg-white/5 border border-white/10 p-4">
 
@@ -327,36 +512,54 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                 return (
 
                     <li
-                      key={d.id}
-                      className="border-b border-white/10 pb-2"
-                    >
-                      <div className="grid grid-cols-12 gap-6 w-full">
-                      
-                        <div className="col-span-2 bg-indigo-500/20 h-12 my-1 mx-2 w-full rounded-md">
-                          <span className="text-indigo-400 py-3 px-3 md:px-7  block rounded-md"><iconMap.totalGeral className="  "/></span>
+  key={d.id}
+  className="border-b border-white/10 pb-3"
+>
+  <div className="flex items-center gap-3 w-full">
 
-                        </div>
-                
-  
-                        <div className="col-span-7  py-0">
-                          <p className="text-white">{d.nome}</p>
-                          <p className="text-yellow-400 text-sm mt-4">
-                          Vence em {calcularDiasRestantes(d.data)} dias
-                          </p>
-                        </div>
+    {/* Ícone */}
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-indigo-500/20">
+      <span className="text-indigo-400">
+        <iconMap.totalGeral />
+      </span>
+    </div>
 
-                      
-                        <div className="col-span-3 md:col-span-3 py-0 px-4">
-                          <p className="text- text-xs">
-                          {new Date(d.data).toLocaleDateString("pt-BR")}
-                        </p>
-                        <p className="mt-4 text-2xl font-bold text-white" >
-                         {Number(d.valor).toFixed(2)}
 
-                        </p>
-                        </div>
-                      </div>  
-                    </li>
+    {/* Nome e vencimento */}
+    <div className="min-w-0 flex-1">
+
+      <p className="truncate text-white font-medium">
+        {d.nome}
+      </p>
+
+      <p className="mt-2 text-sm text-yellow-400">
+        {dias < 0
+          ? `Vencido há ${Math.abs(dias)} dias`
+          : dias === 0
+          ? "Vence hoje"
+          : dias === 1
+          ? "Vence amanhã"
+          : `Vence em ${dias} dias`}
+      </p>
+
+    </div>
+
+
+    {/* Data e valor */}
+    <div className="shrink-0 text-right">
+
+      <p className="text-xs text-slate-400">
+        {new Date(d.data).toLocaleDateString("pt-BR")}
+      </p>
+
+      <p className="mt-2 text-lg sm:text-2xl font-bold text-white">
+        R$ {Number(d.valor).toFixed(2)}
+      </p>
+
+    </div>
+
+  </div>
+</li>
                   );
                 })}
 
@@ -373,88 +576,159 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
 
                         {ultimasDespesas.map((d) => (
 
-                          <li
-                            key={d.id}
-                            className="border-b border-white/10 pb-3"
-                          >
+                         <li
+  key={d.id}
+  className="border-b border-white/10 pb-3"
+>
 
-                            <div className="grid grid-cols-12 gap-4 items-center">
+  <div className="flex items-center gap-3 w-full">
 
-                              {/* Ícone */}
-                              <div className="md:col-span-2 col-span-1">
+    {/* Ícone */}
+    <div className="shrink-0">
+      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500/20">
+        <span className="text-indigo-400">
+          <iconMap.totalGeral />
+        </span>
+      </div>
+    </div>
 
-                                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500/20">
 
-                                  <span className="text-indigo-400">
-                                    <iconMap.totalGeral />
-                                  </span>
+    {/* Nome + Categoria */}
+    <div className="min-w-0 flex-1">
 
-                                </div>
+      <p className="truncate font-medium text-white">
+        {d.nome}
+      </p>
 
-                              </div>
+      <p className="truncate text-xs text-slate-400">
+        {d.categoria?.nome}
+      </p>
 
-                              {/* Nome + Categoria */}
-                              <div className="col-span-3 md:col-span-4">
+    </div>
 
-                                <p className="font-medium text-white">
-                                  {d.nome}
-                                </p>
 
-                                <p className="text-xs text-slate-400">
-                                  {d.categoria?.nome}
-                                </p>
+    {/* Valor + Data */}
+    <div className="shrink-0 text-right">
 
-                              </div>
+      <p className="font-bold text-white text-sm">
+        R$ {Number(d.valor).toFixed(2)}
+      </p>
 
-                              {/* Valor */}
-                              <div className="md:col-span-2 col-span-3">
+      <p className="text-xs text-slate-400">
+        {new Date(d.data).toLocaleDateString("pt-BR")}
+      </p>
 
-                                <p className="font-bold text-white text-sm">
-                                  R$ {Number(d.valor).toFixed(2)}
-                                </p>
+    </div>
 
-                              </div>
 
-                              {/* Data */}
-                              <div className="col-span-2 sm:col-span-none">
+    {/* Status */}
+    <span
+      className={`
+        shrink-0 px-3 py-1 rounded-full text-xs font-medium
+        ${
+          d.pago
+            ? "bg-emerald-500/20 text-emerald-400"
+            : "bg-yellow-500/20 text-yellow-400"
+        }
+      `}
+    >
+      {d.pago ? "Pago" : "Pendente"}
+    </span>
 
-                                <p className="text-xs text-slate-400">
-                                  {new Date(d.data).toLocaleDateString("pt-BR")}
-                                </p>
 
-                              </div>
+  </div>
 
-                              {/* Status */}
-                              <div className="col-span-1">
-
-                                <span
-            className={`
-              px-4 py-2 rounded-full text-xs font-medium
-              ${
-                d.pago
-                  ? "bg-emerald-500/20 text-emerald-400"
-                  : "bg-yellow-500/20 text-yellow-400"
-              }
-            `}
-          >
-            {d.pago ? "Pago" : "Pendente"}
-          </span>
-
-                              </div>
-
-                            </div>
-
-                          </li>
+</li>
 
                         ))}
 
                       </ul>
                     </div>
+                    
           </div>      
           
 
          
 
+        </div>
+      ) : mode === "categoria-total" && activeCategoria ? (
+        <div className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-2xl border border-white/10 bg-white p-4">
+              <p className="text-sm font-medium text-indigo-700">Total da categoria</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">
+                R$ {Number(totalCategoria || 0).toFixed(2)}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white p-4">
+              <p className="text-sm font-medium text-indigo-700">Pago</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">
+                R$ {activeCategoria.despesas
+                  .filter((d: any) => d.pago)
+                  .reduce((acc: number, d: any) => acc + Number(d.valor), 0)
+                  .toFixed(2)}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white p-4">
+              <p className="text-sm font-medium text-indigo-700">Pendente</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">
+                R$ {activeCategoria.despesas
+                  .filter((d: any) => !d.pago)
+                  .reduce((acc: number, d: any) => acc + Number(d.valor), 0)
+                  .toFixed(2)}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white p-4">
+              <p className="text-sm font-medium text-indigo-700">Contas</p>
+              <p className="mt-2 text-3xl font-bold text-gray-800">
+                {activeCategoria.despesas.length}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <h2 className="text-lg font-semibold text-white">Resumo rápido</h2>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-sm text-slate-400">Vencidas</p>
+                <p className="mt-2 text-2xl font-semibold text-white">
+                  {activeCategoria.despesas.filter((d: any) => !d.pago && new Date(d.data) < new Date()).length}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-sm text-slate-400">Próximas a vencer</p>
+                <p className="mt-2 text-2xl font-semibold text-white">
+                  {[...activeCategoria.despesas]
+                    .filter((d: any) => !d.pago)
+                    .sort((a: any, b: any) => new Date(a.data).getTime() - new Date(b.data).getTime())
+                    .slice(0, 3)
+                    .map((d: any) => d.nome)
+                    .join(", ") || "Sem pendências"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <h2 className="text-lg font-semibold text-white">Despesas da categoria</h2>
+
+            <div className="mt-4 space-y-2">
+              {activeCategoria.despesas.map((d: any) => (
+                <div
+                  key={d.id}
+                  className="flex items-center justify-between border-b border-white/10 pb-2 text-sm text-slate-300"
+                >
+                  <span>{d.nome}</span>
+                  <span>R$ {Number(d.valor).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       ) : mode === "categoria" && activeCategoria ? (
         <div>
@@ -480,42 +754,40 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
           </div>
 
         </div>
-      ) : activeDespesa ? (
-        <div>
+        ) : despesaAtual ? (        <div>
 
           <p className="mt-2 text-slate-300">
-            {activeDespesa.descricao}
+            {despesaAtual.descricao}
           </p>
 
           <div className="mt-5 space-y-2">
 
             <p className="text-xl font-bold">
-              R$ {Number(activeDespesa.valor).toFixed(2)}
+              R$ {Number(despesaAtual.valor).toFixed(2)}
             </p>
 
             <p className="text-sm text-slate-400">
               Vencimento:{" "}
-              {new Date(activeDespesa.data).toLocaleDateString("pt-BR")}
-            </p>
+              {formatarData(despesaAtual.data)}            </p>
 
             <p className="text-sm text-slate-500">
-              Criado em:{" "}
+              Data do cadastro:{" "}
               {new Date(activeDespesa.createdAt).toLocaleDateString("pt-BR")}
             </p>
 
-            {diasRestantes > 0 && (
+            {!despesaAtual.pago && diasRestantes > 0 && (
               <p className="text-sm text-emerald-400">
                 Faltam {diasRestantes} dias para vencer
               </p>
             )}
 
-            {diasRestantes === 0 && (
+            {!despesaAtual.pago && diasRestantes === 0 && (
               <p className="text-sm text-yellow-400">
                 Vence hoje
               </p>
             )}
 
-            {diasRestantes < 0 && (
+            {!despesaAtual.pago && diasRestantes < 0 && (
               <p className="text-sm text-red-400">
                 Vencida há {Math.abs(diasRestantes)} dias
               </p>
@@ -523,12 +795,12 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
 
             <p
               className={`text-sm font-medium ${
-                activeDespesa.pago
+                despesaAtual.pago
                   ? "text-emerald-400"
                   : "text-yellow-400"
               }`}
             >
-              {activeDespesa.pago ? "Conta paga" : "Conta pendente"}
+              {despesaAtual.pago ? "Conta paga" : "Conta pendente"}
             </p>
 
             <button
@@ -544,7 +816,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                     },
                     body: JSON.stringify({
                       id: activeDespesa.id,
-                      pago: !activeDespesa.pago,
+                      pago: !despesaAtual.pago,
                     }),
                   });
 
@@ -556,6 +828,13 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
                     )
                   );
 
+                  setDespesaAtual((prev:any) => ({
+                    ...prev,
+                    pago: !prev.pago
+                  }));
+                 
+                  
+
                   router.refresh();
                 } catch (error) {
                   console.error(error);
@@ -566,7 +845,7 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
               className={`
                 relative h-7 w-14 rounded-full transition
                 ${
-                  activeDespesa.pago
+                  despesaAtual.pago
                     ? "bg-emerald-500"
                     : "bg-slate-600"
                 }
@@ -575,12 +854,14 @@ const [listaDespesas, setListaDespesas] = useState(despesas);
               <span
                 className={`
                   absolute top-1 h-5 w-5 bg-white rounded-full transition
-                  ${activeDespesa.pago ? "left-8" : "left-1"}
+                  ${despesaAtual.pago ? "left-8" : "left-1"}
                 `}
               />
-            </button>
-            </div>
-            <div className="mt-6">
+             </button>
+
+          </div>
+
+          <div className="mt-6">
             <button
                 onClick={() =>
                   router.push(`/dashboard/despesa/${activeDespesa.id}/editar`)

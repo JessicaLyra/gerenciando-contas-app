@@ -6,6 +6,8 @@ import AuthButton from "@/components/AuthButton";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+
 
 import Image from "next/image";
 
@@ -57,41 +59,77 @@ export default function NovaContaPage() {
   }, []);
 
   async function onSubmit(data: LoginFormValues) {
-   
+    const valorFormatado = Number(
+      data.valor
+        .toString()
+        .replace(/\./g, "")
+        .replace(",", ".")
+    );
 
-  console.log(data);
+    const payload = {
+      ...data,
+      valor: valorFormatado,
+    };
 
-  const valorFormatado = Number(
-    data.valor
-      .toString()
-      .replace(/\./g, "")
-      .replace(",", ".")
-  );
+    // Verifica se todos os campos foram preenchidos
+    if (
+      !data.nome ||
+      !data.valor ||
+      !data.categoriaId ||
+      !data.data ||
+      !data.descricao
+    ) {
+      toast.warning("Preencha todos os campos", {
+        description: "Todos os campos são obrigatórios para cadastrar a despesa.",
+        style: {
+          background: "#451a03",
+          border: "1px solid #f59e0b",
+          color: "#fff",
+        },
+      });
 
-  const payload = {
-    ...data,
-    valor: valorFormatado,
-  };
+      return;
+    }
 
-  const response = await fetch("/api/dashboard/nova-conta", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+
+    const response = await fetch("/api/dashboard/nova-conta", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+  toast.error("Erro ao cadastrar despesa", {
+    description:
+      result.message || "Não foi possível salvar a despesa. Tente novamente.",
+    style: {
+      background: "#450a0a",
+      border: "1px solid #ef4444",
+      color: "#fff",
     },
-    body: JSON.stringify(payload),
   });
 
-  const result = await response.json();
-
-  alert(result.message);
+  return;
 }
 
+toast.success("Despesa cadastrada com sucesso!", {
+  description: "A despesa foi adicionada ao seu controle financeiro.",
+  style: {
+    background: "#052e16",
+    border: "1px solid #22c55e",
+    color: "#fff",
+  },
+});
+  }
   return (
 
-    <div className="p-6 rounded-3xl bg-slate-900">
-
+    <div className="w-full max-w-full overflow-hidden rounded-3xl bg-slate-900 p-4 sm:p-6">
       <Image
-        className="mx-auto w-auto"
+        className="mx-auto h-auto w-40 sm:w-auto"
         src="/assets/gerenciando-contas-logo.png"
         alt="Logo"
         width={200}
@@ -102,8 +140,7 @@ export default function NovaContaPage() {
         Nova conta de despesa
       </h1>
 
-      <div className="mt-10 lg:mx-auto w-5xl rounded-md px-3 py-2">
-
+      <div className="mt-8 w-full max-w-3xl mx-auto rounded-md px-0 sm:px-3 py-2">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="mt-6 space-y-5"
@@ -210,24 +247,34 @@ export default function NovaContaPage() {
             />
 
           </div>
-          <div className="flex inline-flex  mt-4 gap-5">
+          <div className="mt-6 flex flex-col sm:flex-row gap-4">
     
           {/* BOTÃO */}
             <button
               type="submit"
               className="
-                mt-6 rounded-full
-                px-4 py-4
+                flex items-center justify-center gap-2
+                rounded-full
+                px-5 py-3
                 gradient-primary
-                transition-all duration-300 ease-in-out 
-              hover:brightness-130 flex inline-flex gap-2 cursor-pointer"
+                transition-all duration-300 ease-in-out
+                hover:brightness-130
+                cursor-pointer
+                w-full sm:w-auto
+              "
               
             >
             <Save size={20} /> Salvar despesa 
             </button>
             <Link
               href="/dashboard"
-              className="mt-6 px-4 py-4 button-transparent flex inline-flex gap-2 align-middle"
+              className="
+                flex items-center justify-center gap-2
+                px-5 py-3
+                button-transparent
+                rounded-full
+                w-full sm:w-auto
+              "
             >
             <Undo2 size={20} /> Voltar para o dashboard
             </Link>

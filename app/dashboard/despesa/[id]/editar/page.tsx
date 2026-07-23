@@ -29,33 +29,33 @@ export default async function EditarDespesaPage({ params }: Props) {
     }   
     return (
       
+<div className="w-full max-w-full overflow-hidden rounded-3xl bg-slate-900 p-4 sm:p-6">
 
-        <div className="p-6 rounded-3xl bg-slate-900">
+  <Image
+    className="mx-auto h-auto w-32 sm:w-auto"
+    src="/assets/gerenciando-contas-logo.png"
+    alt="Logo"
+    width={100}
+    height={50}
+  />
 
-          <Image
-            className="mx-auto w-auto"
-            src="/assets/gerenciando-contas-logo.png"
-            alt="Logo"
-            width={100}
-            height={50}
-          />
+  <h1 className="mt-6 text-center text-xl font-semibold sm:mt-10 sm:text-2xl">
+    Editar despesa
+  </h1>
 
-          <h1 className="mt-10 text-center text-2xl font-semibold">
-            Editar despesa
-          </h1>
 
-          <div className="mt-10 lg:mx-auto w-5xl rounded-md px-3 py-2">
+  <div className="mt-8 w-full max-w-3xl rounded-md px-0 py-2 sm:mx-auto sm:px-3">
 
-            <EditarDespesaForm
-              despesa={{
-                ...despesa,
-                valor: Number(despesa.valor),
-              }}
-              categorias={categorias}
-            />
+    <EditarDespesaForm
+      despesa={{
+        ...despesa,
+        valor: Number(despesa.valor),
+      }}
+      categorias={categorias}
+    />
 
-          </div>
+  </div>
 
-        </div>
+</div>
     );
 }

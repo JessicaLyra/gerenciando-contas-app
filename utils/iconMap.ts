@@ -9,8 +9,8 @@ import {
   Laptop,
   Plane,
   MoreHorizontal,
-    Wallet,
-    
+  Wallet,
+  BarChart3,
 } from "lucide-react";
 
 export const iconMap: Record<string, any> = {
@@ -25,5 +25,6 @@ export const iconMap: Record<string, any> = {
   viagem: Plane,
   outros: MoreHorizontal,
   despesa: Wallet,
-  totalGeral: Wallet
+  totalGeral: Wallet,
+  resumo: BarChart3,
 };

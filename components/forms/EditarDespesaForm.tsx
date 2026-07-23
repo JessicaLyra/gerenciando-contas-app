@@ -2,10 +2,12 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import AuthButton from "@/components/AuthButton";
 import ExpenseForm from "@/components/forms/ExpenseForm";
 import SelectForm from "@/components/forms/SelectForm";
-
+import ConfirmModal from "@/components/ConfirmModal";
+import { toast } from "sonner";
 
 import {
   User,
@@ -38,6 +40,7 @@ export default function EditarDespesaForm({
 }: Props) {
 
   const router = useRouter();
+  const [openModal, setOpenModal] = useState(false);
 
   const {
     register,
@@ -82,7 +85,25 @@ export default function EditarDespesaForm({
 
       const result = await response.json();
 
-      alert(result.message);
+      if (response.ok) {
+        toast.success("Despesa atualizada!", {
+          description: "Sua despesa foi salva com sucesso.",
+          style: {
+            background: "#052e16",
+            border: "1px solid #22c55e",
+            color: "#fff",
+          },
+        });
+      } else {
+        toast.error("Erro ao cadastrar", {
+          description: result.message,
+          style: {
+            background: "#450a0a",
+            border: "1px solid #ef4444",
+            color: "#fff",
+          },
+        });
+      }
 
       router.push("/dashboard");
 
@@ -100,11 +121,7 @@ export default function EditarDespesaForm({
 
   async function excluirDespesa() {
 
-  const confirmar = confirm(
-    "Deseja realmente excluir esta despesa?"
-  );
-
-  if (!confirmar) return;
+  
 
   try {
 
@@ -123,7 +140,14 @@ export default function EditarDespesaForm({
 
     const result = await response.json();
 
-    alert(result.message);
+    toast.success("Despesa excluída!", {
+      description: result.message,
+      style: {
+        background: "#052e16",
+        border: "1px solid #22c55e",
+        color: "#fff",
+      },
+    });
 
     router.push("/dashboard");
 
@@ -133,7 +157,14 @@ export default function EditarDespesaForm({
 
     console.error(error);
 
-    alert("Erro ao excluir despesa");
+    toast.error("Erro ao excluir despesa", {
+      description: "Não foi possível excluir esta despesa.",
+      style: {
+        background: "#450a0a",
+        border: "1px solid #ef4444",
+        color: "#fff",
+      },
+    });
 
   }
 
@@ -209,7 +240,7 @@ export default function EditarDespesaForm({
         text="Excluir despesa"
         variant="danger"
         icon={<Trash2 size={20} />}
-        onClick={excluirDespesa}
+        onClick={() => setOpenModal(true)}
       />
       
       
@@ -221,7 +252,18 @@ export default function EditarDespesaForm({
       
       </div>
     </form>
-    
+
+    <ConfirmModal
+      open={openModal}
+      title="🗑 Excluir despesa"
+      description="Tem certeza que deseja excluir esta despesa? Essa ação não poderá ser desfeita."
+      onCancel={() => setOpenModal(false)}
+      onConfirm={() => {
+        setOpenModal(false);
+        excluirDespesa();
+      }}
+    />
+
     </>
   );
 }
